@@ -1,20 +1,37 @@
 const fs = require('fs');
 const path = require('path');
-
+const doctors = require('./doctors');
+const express = require('express');
+const router = express.Router();
 const FAVICON = path.join(__dirname,'favicon.png');
 
-interceptor = async function(req,res){
+router.use(async function(req,res,next){
     try {
         // tarayıcılar otomatik olarak icon requesti atıyor
         if(req.url == '/favicon.ico'){
             res.setHeader('Content-Type', 'image/x-icon');
-            return await fs.createReadStream(FAVICON).pipe(res);
+            icon = fs.readFileSync(FAVICON);
+            res.send(icon);
         }
-        return;
+        else{
+            next();
+        }
     } catch (error) {
-        console.error('interceptor error: ', error);
+        console.error('interceptor error:', error);
+        console.error('interceptor error:', req.url);
     }
+})
 
-}
+router.route('/doctor')
+        .get(async function(req,res){
+            // req.param('id')
+            res.send(await doctors.getDoctor(req.query.id));
+        })
+        .post(async function(req,res){
+            res.send(await doctors.postDoctor())
+        })
+        .delete(async function(req,res){
+            res.send(await doctors.deleteDoctor())
+        });
 
-module.exports = interceptor;
+module.exports = router;
