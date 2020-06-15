@@ -1,10 +1,25 @@
 const fs = require('fs');
 const path = require('path');
+const url = require('url');
 const doctors = require('./doctors');
-const login = require('./login');
+const login = require('./services/login');
+const profile = require('./services/profile');
 const express = require('express');
 const router = express.Router();
 const FAVICON = path.join(__dirname,'favicon.png');
+const firebase = require('firebase');
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAV0oz_CHH7LqntM5KTZIKfqMn5kCXvCPU",
+    authDomain: "findmydoctorapp.firebaseapp.com",
+    databaseURL: "https://findmydoctorapp.firebaseio.com",
+    projectId: "findmydoctorapp",
+    storageBucket: "findmydoctorapp.appspot.com",
+    messagingSenderId: "1825891191",
+    appId: "1:1825891191:web:c4da7bb9a94de2b1bdf772"
+  };
+
+  firebase.initializeApp(firebaseConfig)
 
 router.use(async function(req,res,next){
     try {
@@ -18,18 +33,28 @@ router.use(async function(req,res,next){
             next();
         }
     } catch (error) {
-        console.error('interceptor error:', error);
-        console.error('interceptor error:', req.url);
+        console.error('interceptor error: ', error);
+        console.error('interceptor error, Request URL: ', req.url);
     }
 })
 
 router.route('/login').get(async function(req,res){
-    console.log(JSON.stringify(req.query));
-    res.send(await login.signIn(req.query.mail, req.query.password));
+    const queryObject = url.parse(req.url,true).query;
+    console.log('Login Request: Mail: ' +queryObject.mail +' , '+'Password: ' + queryObject.password);
+    let result = await login.signIn(queryObject.mail, queryObject.password);
+    console.log('Login Result: ', result);
+    res.send(result);
 })
-router.route('/login').post(async function(req,res){
-    res.send(await login.signIn(req.query.mail, req.query.password));
+
+router.route('/profile').get(async function(req,res){
+    const queryObject = url.parse(req.url,true).query;
+    console.log('Profile Request: UserId: ' +queryObject.userId);
+    let result = await profile.getProfileInfo(queryObject.userId);
+    console.log('Login Result: ', result);
+    res.send(result);
 })
+
+
 router.route('/doctor')
         .get(async function(req,res){
             // req.param('id')
