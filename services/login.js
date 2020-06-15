@@ -1,6 +1,6 @@
 //const {firebase} = require('./database');
 const firebase = require("firebase/app");
-require("firebase/auth")
+require("firebase/auth");
 
 
 module.exports.signIn = async function(mail,password){

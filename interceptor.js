@@ -50,7 +50,7 @@ router.route('/profile').get(async function(req,res){
     const queryObject = url.parse(req.url,true).query;
     console.log('Profile Request: UserId: ' +queryObject.userId);
     let result = await profile.getProfileInfo(queryObject.userId);
-    console.log('Login Result: ', result);
+    console.log('Profile Result: ', result);
     res.send(result);
 })
 
