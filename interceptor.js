@@ -4,6 +4,7 @@ const url = require('url');
 const doctors = require('./doctors');
 const login = require('./services/login');
 const profile = require('./services/profile');
+const meeting = require('./services/meeting');
 const express = require('express');
 const router = express.Router();
 const FAVICON = path.join(__dirname,'favicon.png');
@@ -48,9 +49,16 @@ router.route('/login').get(async function(req,res){
 
 router.route('/profile').get(async function(req,res){
     const queryObject = url.parse(req.url,true).query;
-    console.log('Profile Request: UserId: ' +queryObject.userId);
+    // console.log('Profile Request: UserId: ' +queryObject.userId);
     let result = await profile.getProfileInfo(queryObject.userId);
-    console.log('Profile Result: ', result);
+    // console.log('Profile Result: ', result);
+    res.send(result);
+})
+
+
+router.route('/meetings').get(async function(req,res){
+    const queryObject = url.parse(req.url,true).query;
+    let result = await meeting.getMeetings(queryObject.userId);
     res.send(result);
 })
 
